@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id('io.ebean') version '13.6.5'
+    id 'jacoco'
 }
 
 group 'hexlet.code'
@@ -53,4 +54,12 @@ installDist.mustRunAfter clean
 task generateMigrations (type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = "hexlet.code.GenerateDbMigration"
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
 }
