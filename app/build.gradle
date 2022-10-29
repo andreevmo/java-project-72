@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id('io.ebean') version '13.6.5'
 }
 
 group 'hexlet.code'
@@ -11,10 +12,26 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.23.1'
+    implementation group: 'com.konghq', name: 'unirest-java', version: '3.13.12'
+
     implementation 'io.javalin:javalin:5.1.1'
     implementation("org.slf4j:slf4j-simple:2.0.3")
+
+    implementation 'io.ebean:ebean:13.10.0'
+    implementation 'io.ebean:ebean-querybean:13.10.0'
+    implementation 'io.ebean:ebean-annotation:8.3'
+    annotationProcessor 'io.ebean:querybean-generator:13.10.0'
+    implementation 'io.ebean:ebean-migration:13.6.2'
+
+    implementation 'io.ebean:ebean-ddl-generator:13.10.0'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.5'
+    implementation 'javax.activation:activation:1.1.1'
+
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
+
 }
 
 test {
@@ -32,3 +49,8 @@ application {
 
 task stage(dependsOn: ['clean', 'installDist'])
 installDist.mustRunAfter clean
+
+task generateMigrations (type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "hexlet.code.GenerateDbMigration"
+}
