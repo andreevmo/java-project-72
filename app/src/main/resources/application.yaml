@@ -1,0 +1,14 @@
+ebean:
+  migration:
+    run: true
+
+datasource:
+  local_h2:
+    username: sa
+    password: sa
+    url: jdbc:h2:./java_page_analyzer
+
+  production_postgres:
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
+    url: ${JDBC_DATABASE_URL}
