@@ -18,7 +18,9 @@ dependencies {
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.23.1'
     implementation group: 'com.konghq', name: 'unirest-java', version: '3.13.12'
 
-    implementation 'io.javalin:javalin:5.1.1'
+    implementation 'io.javalin:javalin:5.1.2'
+    implementation group: 'io.javalin', name: 'javalin-rendering', version: '5.1.2'
+    implementation 'gg.jte:jte:2.2.2'
     implementation("org.slf4j:slf4j-simple:2.0.3")
 
     implementation 'io.ebean:ebean:13.10.0'
@@ -28,10 +30,15 @@ dependencies {
     implementation 'io.ebean:ebean-migration:13.6.2'
 
     implementation 'io.ebean:ebean-ddl-generator:13.10.0'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.5'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.0'
     implementation 'javax.activation:activation:1.1.1'
 
     testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
+
+    implementation 'org.thymeleaf:thymeleaf:3.1.0.RC1'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
+    implementation 'org.webjars:bootstrap:5.2.2'
 
 }
 
