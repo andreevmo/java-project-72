@@ -1,6 +1,7 @@
 package hexlet.code;
 
 import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinThymeleaf;
 
 import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.get;
@@ -18,6 +19,7 @@ public class App {
     public static Javalin getApp() {
         Javalin app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
+            JavalinThymeleaf.init(GeneratorTemplateEngine.getInstance());
         });
         addRoutes(app);
         return app;
@@ -25,9 +27,7 @@ public class App {
 
     public static void addRoutes(Javalin app) {
         app.routes(() -> {
-            path("/", () -> {
-                get(ctx -> {ctx.result("Hello world!");});
-            });
+            path("/", () -> get(Controller.mainPage));
         });
     }
 

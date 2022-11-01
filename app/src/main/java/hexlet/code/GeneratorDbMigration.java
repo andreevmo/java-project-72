@@ -4,7 +4,7 @@ import io.ebean.annotation.Platform;
 import io.ebean.dbmigration.DbMigration;
 import java.io.IOException;
 
-public class GenerateDbMigration {
+public class GeneratorDbMigration {
 
     public static void main(String[] args) throws IOException {
 
