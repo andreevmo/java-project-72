@@ -27,7 +27,8 @@ public class AppTest {
                 .get(baseUrl + "/")
                 .asString();
         String content  = response.getBody();
+        int answerCode = response.getStatus();
 
-        assertThat(content).isEqualTo("Hello world!");
+        assertThat(answerCode).isEqualTo(200);
     }
 }
