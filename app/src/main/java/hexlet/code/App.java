@@ -3,8 +3,7 @@ package hexlet.code;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
-import static io.javalin.apibuilder.ApiBuilder.path;
-import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class App {
 
@@ -28,6 +27,7 @@ public class App {
     public static void addRoutes(Javalin app) {
         app.routes(() -> {
             path("/", () -> get(Controller.mainPage));
+            path("/urls", () -> post(Controller.addUrl));
         });
     }
 
