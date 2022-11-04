@@ -4,7 +4,7 @@ import io.ebean.Model;
 import io.ebean.annotation.WhenCreated;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
 
 @Entity
 @Table(name = "urls")
@@ -15,7 +15,11 @@ public class Url extends Model {
     private int id;
     private String name;
     @WhenCreated
-    private Date created_at;
+    private Instant created_at;
+
+    public Url(String name) {
+        this.name = name;
+    }
 
     public int getId() {
         return id;
@@ -25,7 +29,7 @@ public class Url extends Model {
         return name;
     }
 
-    public Date getCreated_at() {
+    public Instant getCreated_at() {
         return created_at;
     }
 
@@ -33,7 +37,7 @@ public class Url extends Model {
         this.name = name;
     }
 
-    public void setCreated_at(Date created_at) {
+    public void setCreated_at(Instant created_at) {
         this.created_at = created_at;
     }
 }

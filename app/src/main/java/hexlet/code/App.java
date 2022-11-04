@@ -21,13 +21,22 @@ public class App {
             JavalinThymeleaf.init(GeneratorTemplateEngine.getInstance());
         });
         addRoutes(app);
+        app.before(ctx -> {
+            ctx.attribute("ctx", ctx);
+        });
         return app;
     }
 
     public static void addRoutes(Javalin app) {
         app.routes(() -> {
             path("/", () -> get(Controller.mainPage));
-            path("/urls", () -> post(Controller.addUrl));
+            path("/urls", () -> {
+                    post(Controller.addUrl);
+                    get(Controller.showUrls);
+                    path("{id}", () -> {
+                        get(Controller.showUrl);
+                    });
+            });
         });
     }
 
