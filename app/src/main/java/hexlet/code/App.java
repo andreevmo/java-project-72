@@ -3,8 +3,7 @@ package hexlet.code;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
-import static io.javalin.apibuilder.ApiBuilder.path;
-import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class App {
 
@@ -22,12 +21,22 @@ public class App {
             JavalinThymeleaf.init(GeneratorTemplateEngine.getInstance());
         });
         addRoutes(app);
+        app.before(ctx -> {
+            ctx.attribute("ctx", ctx);
+        });
         return app;
     }
 
     public static void addRoutes(Javalin app) {
         app.routes(() -> {
             path("/", () -> get(Controller.mainPage));
+            path("/urls", () -> {
+                    post(Controller.addUrl);
+                    get(Controller.showUrls);
+                    path("{id}", () -> {
+                        get(Controller.showUrl);
+                    });
+            });
         });
     }
 

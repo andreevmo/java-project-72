@@ -5,41 +5,43 @@ plugins {
     id 'jacoco'
 }
 
-group 'hexlet.code'
-version '1.0'
+group = 'hexlet.code'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.23.1'
-    implementation group: 'com.konghq', name: 'unirest-java', version: '3.13.12'
-
-    implementation 'io.javalin:javalin:5.1.2'
-    implementation group: 'io.javalin', name: 'javalin-rendering', version: '5.1.2'
+    implementation 'io.javalin:javalin:5.1.3'
+    implementation group: 'io.javalin', name: 'javalin-rendering', version: '5.1.3'
+    implementation 'org.slf4j:slf4j-simple:2.0.3'
     implementation 'gg.jte:jte:2.2.2'
-    implementation("org.slf4j:slf4j-simple:2.0.3")
-
-    implementation 'io.ebean:ebean:13.10.0'
-    implementation 'io.ebean:ebean-querybean:13.10.0'
-    implementation 'io.ebean:ebean-annotation:8.3'
-    annotationProcessor 'io.ebean:querybean-generator:13.10.0'
-    implementation 'io.ebean:ebean-migration:13.6.2'
-
-    implementation 'io.ebean:ebean-ddl-generator:13.10.0'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.0'
-    implementation 'javax.activation:activation:1.1.1'
-
-    testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 
     implementation 'org.thymeleaf:thymeleaf:3.1.0.RC1'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
     implementation 'org.webjars:bootstrap:5.2.2'
 
+    implementation 'com.h2database:h2:2.1.214'
+    implementation 'org.postgresql:postgresql:42.5.0'
+
+    implementation 'io.ebean:ebean:13.10.0'
+    implementation 'io.ebean:ebean-ddl-generator:13.10.0'
+    implementation 'io.ebean:ebean-querybean:13.10.0'
+    implementation 'io.ebean:ebean-migration:13.6.2'
+    implementation 'io.ebean:ebean-annotation:8.3'
+    annotationProcessor 'io.ebean:querybean-generator:13.10.0'
+
+    // NOTE: ebean-ddl-generator требует старые зависимости, которых нет в java 9 и выше
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.5'
+    implementation 'javax.activation:activation:1.1.1'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
+    testImplementation 'org.assertj:assertj-core:3.23.1'
+    testImplementation 'io.ebean:ebean-test:13.10.0'
+    testImplementation 'com.konghq:unirest-java:3.13.12'
 }
 
 test {
@@ -60,7 +62,7 @@ installDist.mustRunAfter clean
 
 task generateMigrations (type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = "hexlet.code.GenerateDbMigration"
+    main = "hexlet.code.GeneratorDbMigration"
 }
 
 jacocoTestReport {
