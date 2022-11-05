@@ -21,7 +21,7 @@ public final class Controller {
                     .name.eq(nameUrl)
                     .exists();
 
-            if(checkUrl) {
+            if (checkUrl) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flash-type", "info");
                 ctx.redirect("/");

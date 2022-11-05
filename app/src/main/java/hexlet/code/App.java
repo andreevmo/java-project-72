@@ -3,11 +3,14 @@ package hexlet.code;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
-import static io.javalin.apibuilder.ApiBuilder.*;
+import static io.javalin.apibuilder.ApiBuilder.path;
+import static io.javalin.apibuilder.ApiBuilder.post;
+import static io.javalin.apibuilder.ApiBuilder.get;
+
 
 public class App {
 
-    public static int getPort() {
+    private static int getPort() {
         String port = System.getenv("PORT");
         if (port != null) {
             return Integer.valueOf(port);
@@ -27,15 +30,15 @@ public class App {
         return app;
     }
 
-    public static void addRoutes(Javalin app) {
+    private static void addRoutes(Javalin app) {
         app.routes(() -> {
             path("/", () -> get(Controller.mainPage));
             path("/urls", () -> {
-                    post(Controller.addUrl);
-                    get(Controller.showUrls);
-                    path("{id}", () -> {
-                        get(Controller.showUrl);
-                    });
+                post(Controller.addUrl);
+                get(Controller.showUrls);
+                path("{id}", () -> {
+                    get(Controller.showUrl);
+                });
             });
         });
     }

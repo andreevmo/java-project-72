@@ -15,21 +15,21 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
-public class AppTest {
-
-     private static Javalin app;
-     private final String baseUr = "http://localhost:";
-     private Context ctx = mock(Context.class);
-     private final String correctUrlForTest = "https://ru.hexlet.io";
-     private final String inCorrectUrlForTest = "something";
+public final class AppTest {
+    private static Javalin app;
+    private final String baseUrl = "http://localhost:";
+    private Context ctx = mock(Context.class);
+    private final String correctUrlForTest = "https://ru.hexlet.io";
+    private final String inCorrectUrlForTest = "something";
 
     @BeforeAll
     static void beforeAll() {
         app = App.getApp();
-        app.start(App.getPort());
+        app.start();
     }
 
     @AfterAll
@@ -45,7 +45,7 @@ public class AppTest {
     @Test
     void testMainPage() throws Exception {
         HttpResponse<String> response = Unirest
-                .get(baseUr + app.port())
+                .get(baseUrl + app.port())
                 .asString();
         int status = response.getStatus();
         assertThat(status).isEqualTo(200);
@@ -54,7 +54,7 @@ public class AppTest {
     @Test
     void testAddUrlPositive() throws Exception {
         HttpResponse<String> response = Unirest
-                .post(baseUr + app.port() + "/urls")
+                .post(baseUrl + app.port() + "/urls")
                 .field("url", correctUrlForTest)
                 .asString();
         int status = response.getStatus();
@@ -91,7 +91,7 @@ public class AppTest {
     @Test
     void testAddUrlNegative() throws Exception {
         HttpResponse<String> response = Unirest
-                .post(baseUr + app.port() + "/urls")
+                .post(baseUrl + app.port() + "/urls")
                 .field("url", inCorrectUrlForTest)
                 .asString();
         int status = response.getStatus();
@@ -112,11 +112,11 @@ public class AppTest {
     @Test
     void testShowUrls() throws Exception {
         HttpResponse<String> responsePost = Unirest
-                .post(baseUr + app.port() + "/urls")
+                .post(baseUrl + app.port() + "/urls")
                 .field("url", correctUrlForTest)
                 .asString();
         HttpResponse<String> responseGet = Unirest
-                .get(baseUr + app.port() + "/urls")
+                .get(baseUrl + app.port() + "/urls")
                 .asString();
         int status = responseGet.getStatus();
         assertThat(status).isEqualTo(200);
@@ -130,7 +130,7 @@ public class AppTest {
     @Test
     void testShowUrl() throws Exception {
         HttpResponse<String> responsePost = Unirest
-                .post(baseUr + app.port() + "/urls")
+                .post(baseUrl + app.port() + "/urls")
                 .field("url", correctUrlForTest)
                 .asString();
         Url url = DB.find(Url.class)
@@ -138,7 +138,7 @@ public class AppTest {
                 .eq("name", correctUrlForTest)
                 .findOne();
         HttpResponse<String> responseGet = Unirest
-                .get(baseUr + app.port() + "/urls/" + url.getId())
+                .get(baseUrl + app.port() + "/urls/" + url.getId())
                 .asString();
         int status = responseGet.getStatus();
         assertThat(status).isEqualTo(200);
