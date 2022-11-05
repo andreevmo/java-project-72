@@ -32,12 +32,4 @@ public class Url extends Model {
     public Instant getCreated_at() {
         return created_at;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCreated_at(Instant created_at) {
-        this.created_at = created_at;
-    }
 }
