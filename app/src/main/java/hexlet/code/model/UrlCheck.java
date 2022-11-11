@@ -3,12 +3,19 @@ package hexlet.code.model;
 import io.ebean.Model;
 import io.ebean.annotation.WhenCreated;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.Instant;
 
 @Entity
 @Table(name = "url_checks")
-public class UrlCheck extends Model {
+public final class UrlCheck extends Model {
 
     @Id
     @GeneratedValue

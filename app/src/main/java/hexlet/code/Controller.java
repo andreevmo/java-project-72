@@ -3,7 +3,6 @@ package hexlet.code;
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.model.query.QUrl;
-import io.ebean.DB;
 import io.javalin.http.Handler;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;

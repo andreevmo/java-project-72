@@ -1,7 +1,6 @@
 package hexlet.code;
 
 import hexlet.code.model.Url;
-
 import hexlet.code.model.UrlCheck;
 import io.ebean.DB;
 import io.ebean.Transaction;
@@ -11,7 +10,10 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,7 +54,9 @@ public final class AppTest {
                 .where()
                 .eq("name", correctUrlForTest)
                 .findOne();
-        if(url != null) DB.delete(url);
+        if (url != null) {
+            DB.delete(url);
+        }
         ctx = mock(Context.class);
     }
 
