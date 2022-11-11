@@ -11,4 +11,3 @@ bin
 .project*
 .classpath
 .idea/
-app/.gitignore

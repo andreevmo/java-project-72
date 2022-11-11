@@ -1,7 +1,8 @@
-import hexlet.code.App;
-import hexlet.code.Controller;
+package hexlet.code;
+
 import hexlet.code.model.Url;
 
+import hexlet.code.model.UrlCheck;
 import io.ebean.DB;
 import io.ebean.Transaction;
 import io.javalin.Javalin;
@@ -11,11 +12,8 @@ import kong.unirest.Unirest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -28,20 +26,24 @@ import static org.mockito.Mockito.verify;
 public final class AppTest {
     private static Javalin app;
     private final String baseUrl = "http://localhost:";
-    private Context ctx = mock(Context.class);
+    private Context ctx;
     private final String correctUrlForTest = "https://ru.hexlet.io";
     private final String inCorrectUrlForTest = "something";
+    private static MockWebServer server = new MockWebServer();
+    String bodyForTest;
 
     private Transaction transaction;
     @BeforeAll
-    static void beforeAll() {
+    static void beforeAll() throws IOException {
         app = App.getApp();
         app.start();
+        server.start();
     }
 
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws IOException {
         app.stop();
+        server.shutdown();
     }
 
     @BeforeEach
@@ -51,6 +53,7 @@ public final class AppTest {
                 .eq("name", correctUrlForTest)
                 .findOne();
         if(url != null) DB.delete(url);
+        ctx = mock(Context.class);
     }
 
     @Test
@@ -134,17 +137,25 @@ public final class AppTest {
                 .findList();
         Controller.showUrls.handle(ctx);
         verify(ctx).attribute("urls", urls);
+
+        urls = DB.find(Url.class)
+                .where()
+                .between("id", 13, 24)
+                .findList();
+        when(ctx.queryParam("page")).thenReturn("2");
+        Controller.showUrls.handle(ctx);
+        verify(ctx).attribute("urls", urls);
     }
 
     @Test
     void testShowUrl() throws Exception {
         HttpResponse<String> responsePost = Unirest
                 .post(baseUrl + app.port() + "/urls")
-                .field("url", correctUrlForTest)
+                .field("url", correctUrlForTest + ":" + "8000")
                 .asString();
         Url url = DB.find(Url.class)
                 .where()
-                .eq("name", correctUrlForTest)
+                .eq("name", correctUrlForTest + ":" + "8000")
                 .findOne();
         HttpResponse<String> responseGet = Unirest
                 .get(baseUrl + app.port() + "/urls/" + url.getId())
@@ -152,17 +163,29 @@ public final class AppTest {
         int status = responseGet.getStatus();
         assertThat(status).isEqualTo(200);
 
-        when(ctx.path()).thenReturn("/urls/" + url.getId());
+        when(ctx.pathParam("id")).thenReturn(String.valueOf(url.getId()));
         Controller.showUrl.handle(ctx);
         verify(ctx).attribute("url", url);
     }
 
     @Test
-    void testAddUrlCheck() throws IOException {
-        Path filePath = Path.of("bodyForTest.html").toAbsolutePath().normalize();
-        String bodyForTest = Files.readString(filePath);
-        System.out.println(bodyForTest);
-        MockWebServer server = new MockWebServer();
-        //server.enqueue(new MockResponse().setBody());
+    void testAddUrlCheck() throws Exception {
+        bodyForTest = Files.readString(Path.of("src/test/resources/bodyForTest.html"));
+        server.enqueue(new MockResponse().setBody(bodyForTest));
+        String url = server.url("/UrlCheck").toString();
+        System.out.println(url);
+        Url urlForTest = new Url(url);
+        urlForTest.save();
+
+        when(ctx.pathParam("id")).thenReturn(String.valueOf(urlForTest.getId()));
+        Controller.addUrlChecks.handle(ctx);
+
+        UrlCheck urlCheck = DB.find(UrlCheck.class)
+                .where()
+                .eq("url_id", urlForTest.getId())
+                .findOne();
+        assertThat(urlCheck).isNotNull();
+        assertThat(urlCheck.getCreatedAt()).isNotNull();
+        assertThat(urlCheck.getStatusCode()).isEqualTo(200);
     }
 }
