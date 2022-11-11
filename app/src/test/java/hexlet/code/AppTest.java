@@ -3,15 +3,21 @@ import hexlet.code.Controller;
 import hexlet.code.model.Url;
 
 import io.ebean.DB;
+import io.ebean.Transaction;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +32,7 @@ public final class AppTest {
     private final String correctUrlForTest = "https://ru.hexlet.io";
     private final String inCorrectUrlForTest = "something";
 
+    private Transaction transaction;
     @BeforeAll
     static void beforeAll() {
         app = App.getApp();
@@ -38,8 +45,12 @@ public final class AppTest {
     }
 
     @BeforeEach
-    void setUp() {
-        DB.truncate("urls");
+    void beforeEach() {
+        Url url = DB.find(Url.class)
+                .where()
+                .eq("name", correctUrlForTest)
+                .findOne();
+        if(url != null) DB.delete(url);
     }
 
     @Test
@@ -102,8 +113,6 @@ public final class AppTest {
         assertThat(status).isEqualTo(302);
         assertThat(checkLocation).isEqualTo(true);
 
-        DB.truncate("urls");
-
         when(ctx.formParam("url")).thenReturn(inCorrectUrlForTest);
         Controller.addUrl.handle(ctx);
         verify(ctx).sessionAttribute("flash", "Некорректный URL");
@@ -146,5 +155,14 @@ public final class AppTest {
         when(ctx.path()).thenReturn("/urls/" + url.getId());
         Controller.showUrl.handle(ctx);
         verify(ctx).attribute("url", url);
+    }
+
+    @Test
+    void testAddUrlCheck() throws IOException {
+        Path filePath = Path.of("bodyForTest.html").toAbsolutePath().normalize();
+        String bodyForTest = Files.readString(filePath);
+        System.out.println(bodyForTest);
+        MockWebServer server = new MockWebServer();
+        //server.enqueue(new MockResponse().setBody());
     }
 }
