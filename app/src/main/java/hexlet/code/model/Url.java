@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Entity
-@Table(name = "urls")
+@Table(name = "url")
 public final class Url extends Model {
 
     @Id

@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import java.time.Instant;
 
 @Entity
-@Table(name = "url_checks")
+@Table(name = "url_check")
 public final class UrlCheck extends Model {
 
     @Id
