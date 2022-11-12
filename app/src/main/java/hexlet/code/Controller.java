@@ -8,7 +8,6 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -80,22 +79,29 @@ public final class Controller {
                 .where()
                 .id.eq(Integer.parseInt(id))
                 .findOne();
-        HttpResponse<String> response = Unirest
-                .get(url.getName())
-                .asString();
-
-        int statusCode = response.getStatus();
-        Document document = Jsoup.parse(response.getBody());
-        String title = document.title();
-        String h1 = document.getElementsByTag("h1").text();
-        Elements description = document.select("meta[name=description]");
-        String descript = description.attr("content");
-
-        UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, descript, url);
-        urlCheck.save();
         ctx.attribute("url", url);
-        ctx.attribute("urlCheck", urlCheck);
-        ctx.render("showUrl.html");
+        try {
+            HttpResponse<String> response = Unirest
+                    .get(url.getName())
+                    .asString();
+            Integer statusCode = response.getStatus();
+            Document document = Jsoup.parse(response.getBody());
+            String title = document.title();
+            String h1 = document.getElementsByTag("h1").text();
+            String description = document.select("meta[name=description]").attr("content");
+            System.out.println(description);
+
+            UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, description, url);
+            urlCheck.save();
+            ctx.sessionAttribute("flash", "Страница успешно проверена");
+            ctx.attribute("urlCheck", urlCheck);
+            ctx.sessionAttribute("flash-type", "success");
+            ctx.render("showUrl.html");
+        } catch (Exception e) {
+            ctx.sessionAttribute("flash", " Некорректный адрес");
+            ctx.sessionAttribute("flash-type", "danger");
+            ctx.redirect("/urls/" + url.getId());
+        }
     };
 
     private static String getNameForUrl(String url) throws MalformedURLException {

@@ -24,6 +24,13 @@
 </nav>
 
 <main class="flex-grow-1">
+
+    <div th:if="${session.flash}" th:class="'rounded-0 m-0 alert alert-dismissible fade show alert-'
+    + ${ctx.consumeSessionAttribute('flash-type')}" role="alert">
+        <p class="m-0" th:utext="${ctx.consumeSessionAttribute('flash')}"></p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <section>
         <div class="container-lg mt-5">
             <h1 th:text="|Сайт ${url.name}|">Сайт</h1>
@@ -60,14 +67,15 @@
                     <th class="col-2">Дата проверки</th>
                 </tr>
                 </thead>
-                <tbody th:if="${urlCheck}">
-                <tr>
-                    <td th:text="${urlCheck.id}"></td>
-                    <td th:text="${urlCheck.statusCode}"></td>
-                    <td th:text="${urlCheck.title}"></td>
-                    <td th:text="${urlCheck.h1}"></td>
-                    <td th:text="${urlCheck.description}"></td>
-                    <td th:text="${#temporals.format(urlCheck.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                <tbody th:if="${url.urlChecks}">
+                <tr th:each="urlCheck, iterStat : ${url.urlChecks}">
+                    <td th:text="${url.urlChecks[iterStat.size - iterStat.count].id}"></td>
+                    <td th:text="${url.urlChecks[iterStat.size - iterStat.count].statusCode}"></td>
+                    <td th:text="${url.urlChecks[iterStat.size - iterStat.count].title}"></td>
+                    <td th:text="${url.urlChecks[iterStat.size - iterStat.count].h1}"></td>
+                    <td th:text="${url.urlChecks[iterStat.size - iterStat.count].description}"></td>
+                    <td th:text="${#temporals.format(url.urlChecks[iterStat.size - iterStat.count].createdAt
+                    , 'dd/MM/yyyy HH:mm')}"></td>
                 </tr>
                 </tbody>
             </table>
