@@ -11,5 +11,5 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/74fcaf903e0735a3c1b9/test_coverage)](https://codeclimate.com/github/andreevmo/java-project-72/test_coverage)
 
 ### Link of app:
-https://app-andreev.herokuapp.com/
+https://app-java-page-analyzer.herokuapp.com/
 
