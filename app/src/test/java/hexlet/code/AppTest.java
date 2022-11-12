@@ -191,5 +191,13 @@ public final class AppTest {
         assertThat(urlCheck).isNotNull();
         assertThat(urlCheck.getCreatedAt()).isNotNull();
         assertThat(urlCheck.getStatusCode()).isEqualTo(200);
+        assertThat(urlCheck.getH1())
+                .isEqualTo("Онлайн-школа программирования, за выпускниками которой охотятся компании");
+        assertThat(urlCheck.getTitle()).isEqualTo("Хекслет — больше чем школа программирования. "
+                        + "Онлайн курсы, сообщество программистов");
+        assertThat(urlCheck.getDescription()).isEqualTo("Живое онлайн сообщество программистов "
+                + "и разработчиков на JS, Python, Java, PHP, Ruby. "
+                + "Авторские программы обучения с практикой и готовыми проектами в резюме. "
+                + "Помощь в трудоустройстве после успешного окончания обучения");
     }
 }
