@@ -1,11 +1,13 @@
 package hexlet.code;
 
+import hexlet.code.controller.Controller;
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import io.ebean.DB;
 import io.ebean.Transaction;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.validation.Validator;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import okhttp3.mockwebserver.MockResponse;
@@ -180,8 +182,8 @@ public final class AppTest {
         System.out.println(url);
         Url urlForTest = new Url(url);
         urlForTest.save();
-
-        when(ctx.pathParam("id")).thenReturn(String.valueOf(urlForTest.getId()));
+        when(ctx.pathParamAsClass("id", Integer.class))
+                .thenReturn(Validator.create(Integer.class, String.valueOf(urlForTest.getId()), "id"));
         Controller.addUrlChecks.handle(ctx);
 
         UrlCheck urlCheck = DB.find(UrlCheck.class)

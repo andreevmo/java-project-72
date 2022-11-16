@@ -2,6 +2,7 @@ Page analyzer - checks sites for SEO suitability.
 
 Stack:
 - Java 17;
+- Gradle;
 - Javalin;
 - Thymeleaf;
 - Bootstrap;

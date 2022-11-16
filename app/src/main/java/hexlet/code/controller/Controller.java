@@ -1,11 +1,13 @@
-package hexlet.code;
+package hexlet.code.controller;
 
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.model.query.QUrl;
 import io.javalin.http.Handler;
+import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -20,30 +22,34 @@ public final class Controller {
     };
 
     public static Handler addUrl = ctx -> {
+        String inputUrl = ctx.formParam("url");
+        URL parseUrl;
         try {
-            String nameUrl = getNameForUrl(ctx.formParam("url"));
-            boolean checkUrl = new QUrl()
-                    .name.eq(nameUrl)
-                    .exists();
-
-            if (checkUrl) {
-                ctx.sessionAttribute("flash", "Страница уже существует");
-                ctx.sessionAttribute("flash-type", "info");
-                ctx.redirect("/");
-                return;
-            }
-
-            Url modelUrl = new Url(nameUrl);
-            modelUrl.save();
-
-            ctx.sessionAttribute("flash", "Страница успешно добавлена");
-            ctx.sessionAttribute("flash-type", "success");
-            ctx.redirect("/urls");
+            parseUrl = new URL(inputUrl);
         } catch (MalformedURLException e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flash-type", "danger");
             ctx.redirect("/");
+            return;
         }
+
+        String nameUrl = getNameForUrl(parseUrl);
+        boolean checkUrl = new QUrl()
+                .name.eq(nameUrl)
+                .exists();
+
+        if (checkUrl) {
+            ctx.sessionAttribute("flash", "Страница уже существует");
+            ctx.sessionAttribute("flash-type", "info");
+            ctx.redirect("/");
+            return;
+        }
+
+        Url modelUrl = new Url(nameUrl);
+        modelUrl.save();
+        ctx.sessionAttribute("flash", "Страница успешно добавлена");
+        ctx.sessionAttribute("flash-type", "success");
+        ctx.redirect("/urls");
     };
     public static Handler showUrls = ctx -> {
         int step = 12;
@@ -58,6 +64,7 @@ public final class Controller {
         }
 
         List<Url> urls = new QUrl()
+                .orderBy("created_at")
                 .setFirstRow(offset)
                 .setMaxRows(limit)
                 .findList();
@@ -74,12 +81,17 @@ public final class Controller {
         ctx.render("showUrl.html");
     };
     public static Handler addUrlChecks = ctx -> {
-        String id = ctx.pathParam("id");
+        int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
         Url url = new QUrl()
                 .where()
-                .id.eq(Integer.parseInt(id))
+                .id.eq(id)
                 .findOne();
+        if (url == null) {
+            throw new NotFoundResponse();
+        }
+
         ctx.attribute("url", url);
+
         try {
             HttpResponse<String> response = Unirest
                     .get(url.getName())
@@ -89,25 +101,27 @@ public final class Controller {
             String title = document.title();
             String h1 = document.getElementsByTag("h1").text();
             String description = document.select("meta[name=description]").attr("content");
-            System.out.println(description);
 
             UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, description, url);
             urlCheck.save();
             ctx.sessionAttribute("flash", "Страница успешно проверена");
             ctx.attribute("urlCheck", urlCheck);
             ctx.sessionAttribute("flash-type", "success");
-            ctx.render("showUrl.html");
-        } catch (Exception e) {
+            //ctx.render("showUrl.html");
+        } catch (UnirestException e) {
             ctx.sessionAttribute("flash", " Некорректный адрес");
             ctx.sessionAttribute("flash-type", "danger");
             ctx.redirect("/urls/" + url.getId());
+        } catch (Exception e) {
+            ctx.sessionAttribute("flash", e.getMessage());
+            ctx.sessionAttribute("flash-type", "danger");
         }
+        ctx.redirect("/urls/" + url.getId());
     };
 
-    private static String getNameForUrl(String url) throws MalformedURLException {
-        URL urlForParse = new URL(url);
-        return urlForParse.getPort() == -1
-                ? urlForParse.getProtocol() + "://" + urlForParse.getHost()
-                : urlForParse.getProtocol() + "://" + urlForParse.getHost() + ":" + urlForParse.getPort();
+    private static String getNameForUrl(URL url) {
+        return url.getPort() == -1
+                ? url.getProtocol() + "://" + url.getHost()
+                : url.getProtocol() + "://" + url.getHost() + ":" + url.getPort();
     }
 }
