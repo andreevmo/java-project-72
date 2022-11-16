@@ -1,3 +1,14 @@
+Page analyzer - checks sites for SEO suitability.
+
+Stack:
+- Java 17;
+- Javalin;
+- Thymeleaf;
+- Bootstrap;
+- Ebean;
+- Postgres, H2;
+- JUnit, Mockito, Unirest-Java.
+
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/andreevmo/java-project-72/workflows/hexlet-check/badge.svg)](https://github.com/andreevmo/java-project-72/actions)
 
