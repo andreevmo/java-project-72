@@ -154,7 +154,7 @@ public final class AppTest {
     }
 
     @Test
-    void testShowUrl() throws Exception {
+    void testShowUrlPositive() throws Exception {
         HttpResponse<String> responsePost = Unirest
                 .post(baseUrl + app.port() + "/urls")
                 .field("url", correctUrlForTest + ":" + "8000")
@@ -169,13 +169,23 @@ public final class AppTest {
         int status = responseGet.getStatus();
         assertThat(status).isEqualTo(200);
 
-        when(ctx.pathParam("id")).thenReturn(String.valueOf(url.getId()));
+        when(ctx.pathParamAsClass("id", Integer.class))
+                .thenReturn(Validator.create(Integer.class, String.valueOf(url.getId()), "id"));
         Controller.showUrl.handle(ctx);
         verify(ctx).attribute("url", url);
     }
 
     @Test
-    void testAddUrlCheck() throws Exception {
+    void testShowUrlNegative() {
+        HttpResponse<String> responseGet = Unirest
+                .get(baseUrl + app.port() + "/urls/1")
+                .asString();
+        int status = responseGet.getStatus();
+        assertThat(status).isEqualTo(404);
+    }
+
+    @Test
+    void testAddUrlCheckPositive() throws Exception {
         bodyForTest = Files.readString(Path.of("src/test/resources/bodyForTest.html"));
         server.enqueue(new MockResponse().setBody(bodyForTest));
         String url = server.url("/UrlCheck").toString();
@@ -201,5 +211,13 @@ public final class AppTest {
                 + "и разработчиков на JS, Python, Java, PHP, Ruby. "
                 + "Авторские программы обучения с практикой и готовыми проектами в резюме. "
                 + "Помощь в трудоустройстве после успешного окончания обучения");
+    }
+
+    @Test
+    void testAddUrlCheckNegative() throws Exception {
+        HttpResponse<String> response = Unirest
+                .post(baseUrl + app.port() + "/urls/123/checks")
+                .asString();
+        assertThat(response.getStatus()).isEqualTo(404);
     }
 }

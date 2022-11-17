@@ -73,10 +73,13 @@ public final class Controller {
         ctx.render("showUrls.html");
     };
     public static Handler showUrl = ctx -> {
-        String id = ctx.pathParam("id");
+        int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
         Url url = new QUrl()
-                .id.eq(Integer.valueOf(id))
+                .id.eq(id)
                 .findOne();
+        if (url == null) {
+            throw new NotFoundResponse();
+        }
         ctx.attribute("url", url);
         ctx.render("showUrl.html");
     };
